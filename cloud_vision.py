@@ -1,89 +1,112 @@
 import cv2
 import os
 import io
+from google.cloud import vision
 
-def detect_label(path):
+"""
+Wrapper class for Google Vision API calls working with OpenCV to detect labels and to detect faces
+"""
+class cloud_vision:
+    """
+    Constructor for cloud_vision object
+    @param path: A string indicating the location in a system to write to upon taking a photo
+    """
 
-    # Imports the Google Cloud client library
-    from google.cloud import vision
+    def __init__(self, path):
+        self.path = path
+        self.labels = None
 
-    # Instantiates a client
-    client = vision.ImageAnnotatorClient()
+    """
+    Method for detecting labels from Google API documents
+    """
+    def detect_label(self):
 
-    # The name of the image file to annotate
-    file_name = path
+        # Imports the Google Cloud client library
 
-    # Loads the image into memory
-    with io.open(file_name, 'rb') as image_file:
-        content = image_file.read()
+        # Instantiates a client
+        client = vision.ImageAnnotatorClient()
 
-    image = vision.Image(content=content)
+        # The name of the image file to annotate
+        file_name = self.path
 
-    # Performs label detection on the image file
-    response = client.label_detection(image=image)
-    labels = response.label_annotations
+        # Loads the image into memory
+        with io.open(file_name, 'rb') as image_file:
+            content = image_file.read()
 
-    print('Labels:')
-    for label in labels:
-        print(label.description)
+        image = vision.Image(content=content)
 
+        # Performs label detection on the image file
+        response = client.label_detection(image=image)
+        labels = response.label_annotations
 
-def detect_faces(path):
-    """Detects faces in an image."""
-    from google.cloud import vision
-    import io
-    client = vision.ImageAnnotatorClient()
+        print('Labels:')
+        for label in labels:
+            print(label.description)
+            self.labels = label.description
 
-    with io.open(path, 'rb') as image_file:
-        content = image_file.read()
+    """
+    Method for detecting faces and emotions from Google API documents
+    """
+    def detect_faces(self):
+        """Detects faces in an image."""
+        from google.cloud import vision
+        import io
+        client = vision.ImageAnnotatorClient()
 
-    image = vision.Image(content=content)
+        with io.open(self.path, 'rb') as image_file:
+            content = image_file.read()
 
-    response = client.face_detection(image=image)
-    faces = response.face_annotations
+        image = vision.Image(content=content)
 
-    # Names of likelihood from google.cloud.vision.enums
-    likelihood_name = ('UNKNOWN', 'VERY_UNLIKELY', 'UNLIKELY', 'POSSIBLE',
-                       'LIKELY', 'VERY_LIKELY')
-    print('Faces:')
+        response = client.face_detection(image=image)
+        faces = response.face_annotations
 
-    for face in faces:
-        print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
-        print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
-        print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
+        # Names of likelihood from google.cloud.vision.enums
+        likelihood_name = ('UNKNOWN', 'VERY_UNLIKELY', 'UNLIKELY', 'POSSIBLE',
+                           'LIKELY', 'VERY_LIKELY')
+        print('Faces:')
 
-        vertices = (['({},{})'.format(vertex.x, vertex.y)
-                    for vertex in face.bounding_poly.vertices])
+        for face in faces:
+            print('anger: {}'.format(likelihood_name[face.anger_likelihood]))
+            print('joy: {}'.format(likelihood_name[face.joy_likelihood]))
+            print('surprise: {}'.format(likelihood_name[face.surprise_likelihood]))
 
-        print('face bounds: {}'.format(','.join(vertices)))
+            vertices = (['({},{})'.format(vertex.x, vertex.y)
+                         for vertex in face.bounding_poly.vertices])
 
-    if response.error.message:
-        raise Exception(
-            '{}\nFor more info on error messages, check: '
-            'https://cloud.google.com/apis/design/errors'.format(
-                response.error.message))
+            print('face bounds: {}'.format(','.join(vertices)))
 
+        if response.error.message:
+            raise Exception(
+                '{}\nFor more info on error messages, check: '
+                'https://cloud.google.com/apis/design/errors'.format(
+                    response.error.message))
 
-cap = cv2.VideoCapture(0)
-directory = r'/home/chrischang5/PycharmProjects/SFHACKS2021'
-os.chdir(directory)
+    def getlabels(self):
+        return self.labels
 
-while(1):
-    ret, frame = cap.read()
+if __name__ == "__main__":
+    cap = cv2.VideoCapture(0)
+    directory = r'/home/chrischang5/PycharmProjects/SFHACKS2021'
+    os.chdir(directory)
+    CV1 = cloud_vision('/home/chrischang5/PycharmProjects/SFHACKS2021/file.jpg')
+    CV2 = cloud_vision(r'C:\Users\caleb\Pictures\test\file.jpg')
+    while True:
+        ret, frame = cap.read()
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    cv2.imshow('frame', frame)
-    if cv2.waitKey(1) & 0xFF == ord('l'):
-        cv2.imwrite('file.jpg', frame)
-        detect_label(r'/home/chrischang5/PycharmProjects/SFHACKS2021/file.jpg')
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) & 0xFF == ord('l'):
+            cv2.imwrite('file.jpg', frame)
+            CV1.detect_label()
 
-    if cv2.waitKey(1) & 0xFF == ord('f'):
-        cv2.imwrite('file.jpg', frame)
-        detect_faces(r'C:\Users\caleb\Pictures\test\file.jpg')
+        if cv2.waitKey(1) & 0xFF == ord('f'):
+            cv2.imwrite('file.jpg', frame)
+            CV2.detect_faces()
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-cap.release()
-cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()
