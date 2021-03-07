@@ -37,6 +37,7 @@ class App:
         self.btn_start.pack(side=tkinter.LEFT)
         # self.btn_start.grid(row=0, column=0, sticky="NSEW")
 
+
         # Button for stop
         self.btn_stop = tkinter.Button(window, text="Stop", width=30, fg="red", command=self.stop)
         self.btn_stop.pack(side=tkinter.LEFT)
