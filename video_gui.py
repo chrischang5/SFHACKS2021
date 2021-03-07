@@ -100,7 +100,8 @@ class App:
         # self.btn_stop.grid(row=0, column=0, sticky="NSEW")
 
         # Button for Input
-        # self.btn_max_time = tkinter.Button(window, text="Set max time limit", width=30, command=self.set_max_timer_window )
+        # self.btn_max_time = tkinter.Button(window, text="Set max time limit", width=30,
+        # command=self.set_max_timer_window )
         # self.btn_max_time.pack(side=tkinter.LEFT)
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
@@ -137,9 +138,9 @@ class App:
 
         self.window.after(self.delay, self.update)
 
-    # def set_max_timer_window(self):
-    #     self._popup_win = tkinter.Toplevel()
-    #     self._popup = MaxTimeWindow(self._popup_win, self._close_student_cb)
+    def set_max_timer_window(self):
+        self._popup_win = tkinter.Toplevel()
+        self._popup = MaxTimeWindow(self._popup_win, self._close_student_cb)
 
         # max_time_window = simpledialog.askinteger(title="Test",
         #                                   prompt="Maximum Time")
@@ -277,4 +278,3 @@ class MyVideoCapture:
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "AUDIENCE")
-
