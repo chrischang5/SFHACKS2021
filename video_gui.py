@@ -1,17 +1,21 @@
+import threading
 import tkinter
-from tkinter import Grid
+from tkinter import Grid, simpledialog
 import cv2
 import PIL.Image, PIL.ImageTk
 import time
 import datetime
 counter = 0
 running = False
+from input_gui import MaxTimeWindow
+
 
 class App:
     def __init__(self, window, window_title, video_source=0):
         self.window = window
         self.window.title(window_title)
         self.video_source = video_source
+        self.counting = 0
 
         # open video source (by default this will try to open the computer webcam)
         self.vid = MyVideoCapture(self.video_source)
@@ -24,8 +28,8 @@ class App:
         label.pack()
 
         # Button that lets the user take a snapshot
-        self.btn_snapshot = tkinter.Button(window, text="Snapshot", width=30, command=self.snapshot)
-        self.btn_snapshot.pack(side=tkinter.LEFT)
+        # self.btn_snapshot = tkinter.Button(window, text="Snapshot", width=30, command=self.snapshot)
+        # self.btn_snapshot.pack(side=tkinter.LEFT)
         # self.btn_snapshot.grid(row=0,column=0,sticky="NSEW")
 
         # Button for start
@@ -38,6 +42,9 @@ class App:
         self.btn_stop.pack(side=tkinter.LEFT)
         # self.btn_stop.grid(row=0, column=0, sticky="NSEW")
 
+        # Button for Input
+        # self.btn_max_time = tkinter.Button(window, text="Set max time limit", width=30, command=self.set_max_timer_window )
+        # self.btn_max_time.pack(side=tkinter.LEFT)
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
         self.update()
@@ -46,10 +53,16 @@ class App:
 
     def snapshot(self):
         # Get a frame from the video source
+        self.counting +=1
         ret, frame = self.vid.get_frame()
-
         if ret:
-            cv2.imwrite("frame-" + time.strftime("%d-%m-%Y-%H-%M-%S") + ".jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(f"frame-{self.counting}.jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+
+        threading.Timer(10, self.snapshot).start()
+
+    def stop_snapshot(self):
+        threading.Timer(10, self.snapshot).cancel()
+
 
     def update(self):
         # Get a frame from the video source
@@ -61,10 +74,18 @@ class App:
 
         self.window.after(self.delay, self.update)
 
-    def _set_max_timer(self):
-        """ Add Student Popup """
+    def set_max_timer_window(self):
         self._popup_win = tkinter.Toplevel()
-        self._popup = set_max_timer(self._popup_win, self._close_student_cb)
+        self._popup = MaxTimeWindow(self._popup_win, self._close_student_cb)
+
+        # max_time_window = simpledialog.askinteger(title="Test",
+        #                                   prompt="Maximum Time")
+        # max_time_window = tkinter.Toplevel(self.window)
+        # max_time_window.geometry("300x200")
+        # tkinter.Label(max_time_window, text="Maximum Time").pack()
+    def _close_student_cb(self):
+        """ Close Add Student Popup """
+        self._popup_win.destroy()
 
 # https://www.geeksforgeeks.org/create-stopwatch-using-python/
     def counter_label(self, label):
@@ -95,6 +116,8 @@ class App:
         self.counter_label(label)
         self.btn_start['state'] = 'disabled'
         self.btn_stop['state'] = 'normal'
+        self.snapshot()
+
 
     # Stop function of the stopwatch
     def stop(self):
@@ -102,6 +125,8 @@ class App:
         self.btn_start['state'] = 'normal'
         self.btn_stop['state'] = 'disabled'
         running = False
+        self.stop_snapshot()
+
 
 
 
@@ -132,9 +157,6 @@ class MyVideoCapture:
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
-
-
-
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "AUDIENCE")
