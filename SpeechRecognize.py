@@ -25,7 +25,10 @@ def transcribe_file(speech_file):
         print(u"Transcript: {}".format(result.alternatives[0].transcript))
 
 import sox
+import os
+localpath = os.getcwd()
+
 tfm = sox.Transformer()
 tfm.set_output_format(file_type='flac', rate=16000, channels=1, bits=16, encoding='signed-integer')
-tfm.build(r'C:\Users\caleb\PycharmProjects\SFHACKS2021\temp_audio.wav',r'C:\Users\caleb\PycharmProjects\SFHACKS2021\temp_audio1.flac')
-transcribe_file(r'C:\Users\caleb\PycharmProjects\SFHACKS2021\temp_audio1.flac')
+tfm.build(str(localpath) + r"\temp_audio.wav", str(localpath)+ r"\temp_audio1.flac")
+transcribe_file(str(localpath) + r"\temp_audio1.flac")
