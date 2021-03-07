@@ -129,7 +129,7 @@ class App:
         ret, frame = self.vid.get_frame()
         if ret:
             cv2.imwrite(f"frame-{self.counting}.jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
-        #threading.Timer(10, self.snapshot).start()
+        threading.Timer(10, self.snapshot).start()
 
     def stop_snapshot(self):
         threading.Timer(10, self.snapshot).cancel()
@@ -182,12 +182,14 @@ class App:
 
     def start(self, label):
         global running
+        global t
         running = True
         self.counter_label(label)
         self.start_audio_recording()
         self.btn_start['state'] = 'disabled'
         self.btn_stop['state'] = 'normal'
-        threading.Timer(10, self.snapshot).start()
+        t = threading.Timer(10, self.snapshot)
+        t.start()
         #self.snapshot()
 
 
@@ -197,9 +199,10 @@ class App:
         self.btn_start['state'] = 'normal'
         self.btn_stop['state'] = 'disabled'
         self.stop_AVrecording()
+        t.cancel()
         running = False
         # self.stop_snapshot()
-        threading.Timer(10, self.snapshot).cancel()
+
         self.cv_function()
         self.speechtotext()
 
@@ -231,8 +234,8 @@ class App:
         # video_thread.stop()
 
         # Makes sure the threads have finished
-        while threading.active_count() > 1:
-            time.sleep(1)
+        # while threading.active_count() > 1:
+        #     time.sleep(1)
 
         # Merging audio and video signal
 
