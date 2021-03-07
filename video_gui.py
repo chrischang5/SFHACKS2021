@@ -5,9 +5,12 @@ import cv2
 import PIL.Image, PIL.ImageTk
 import time
 import datetime
+from input_gui import MaxTimeWindow
+from cloud_vision import cloud_vision_helpers
+import os
+
 counter = 0
 running = False
-from input_gui import MaxTimeWindow
 
 
 class App:
@@ -33,7 +36,7 @@ class App:
         # self.btn_snapshot.grid(row=0,column=0,sticky="NSEW")
 
         # Button for start
-        self.btn_start = tkinter.Button(window, text="Start", width=30, command=lambda:self.start(label))
+        self.btn_start = tkinter.Button(window, text="Start", width=30, command=lambda: self.start(label))
         self.btn_start.pack(side=tkinter.LEFT)
         # self.btn_start.grid(row=0, column=0, sticky="NSEW")
 
@@ -51,9 +54,17 @@ class App:
 
         self.window.mainloop()
 
+    def cv_function(self):
+        localpath = os.getcwd()
+        c = self.counting
+        i = 1
+        while (i <= c):
+            cloud_vision_helpers.detect_faces(str(localpath) + r"\frame-" + str(i) + ".jpg")
+            i += 1
+
     def snapshot(self):
         # Get a frame from the video source
-        self.counting +=1
+        self.counting += 1
         ret, frame = self.vid.get_frame()
         if ret:
             cv2.imwrite(f"frame-{self.counting}.jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
@@ -62,7 +73,6 @@ class App:
 
     def stop_snapshot(self):
         threading.Timer(10, self.snapshot).cancel()
-
 
     def update(self):
         # Get a frame from the video source
@@ -83,11 +93,12 @@ class App:
         # max_time_window = tkinter.Toplevel(self.window)
         # max_time_window.geometry("300x200")
         # tkinter.Label(max_time_window, text="Maximum Time").pack()
+
     def _close_student_cb(self):
         """ Close Add Student Popup """
         self._popup_win.destroy()
 
-# https://www.geeksforgeeks.org/create-stopwatch-using-python/
+    # https://www.geeksforgeeks.org/create-stopwatch-using-python/
     def counter_label(self, label):
         def count():
             if running:
@@ -98,7 +109,6 @@ class App:
                 else:
 
                     tt = datetime.datetime.fromtimestamp(counter)
-                    print("THIS IS TT", tt)
                     string = tt.strftime("%M:%S")
                     display = string
 
@@ -118,7 +128,6 @@ class App:
         self.btn_stop['state'] = 'normal'
         self.snapshot()
 
-
     # Stop function of the stopwatch
     def stop(self):
         global running
@@ -126,9 +135,7 @@ class App:
         self.btn_stop['state'] = 'disabled'
         running = False
         self.stop_snapshot()
-
-
-
+        self.cv_function()
 
 
 class MyVideoCapture:
@@ -157,6 +164,7 @@ class MyVideoCapture:
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
+
 
 # Create a window and pass it to the Application object
 App(tkinter.Tk(), "AUDIENCE")
