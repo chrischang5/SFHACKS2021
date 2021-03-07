@@ -46,7 +46,8 @@ class App:
         # self.btn_stop.grid(row=0, column=0, sticky="NSEW")
 
         # Button for Input
-        # self.btn_max_time = tkinter.Button(window, text="Set max time limit", width=30, command=self.set_max_timer_window )
+        # self.btn_max_time = tkinter.Button(window, text="Set max time limit", width=30,
+        # command=self.set_max_timer_window )
         # self.btn_max_time.pack(side=tkinter.LEFT)
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
