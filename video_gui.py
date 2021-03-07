@@ -112,6 +112,7 @@ class App:
                     string = tt.strftime("%M:%S")
                     display = string
 
+
                 label['text'] = display  # Or label.config(text=display)
 
                 label.after(1000, count)
