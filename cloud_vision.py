@@ -1,8 +1,8 @@
 import cv2
 import os
+import io
 
 def detect_label(path):
-    import io
 
     # Imports the Google Cloud client library
     from google.cloud import vision
@@ -65,7 +65,7 @@ def detect_faces(path):
 
 
 cap = cv2.VideoCapture(0)
-directory = r'C:\Users\caleb\Pictures\test'
+directory = r'/home/chrischang5/PycharmProjects/SFHACKS2021'
 os.chdir(directory)
 
 while(1):
@@ -76,11 +76,11 @@ while(1):
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('l'):
         cv2.imwrite('file.jpg', frame)
-        detect_label(r'C:\Users\caleb\Pictures\test\file.jpg')
+        detect_label(r'/home/chrischang5/PycharmProjects/SFHACKS2021/file.jpg')
 
-    ##if cv2.waitKey(1) & 0xFF == ord('f'):
-        ##cv2.imwrite('file.jpg', frame)
-        ##detect_faces(r'C:\Users\caleb\Pictures\test\file.jpg')
+    if cv2.waitKey(1) & 0xFF == ord('f'):
+        cv2.imwrite('file.jpg', frame)
+        detect_faces(r'C:\Users\caleb\Pictures\test\file.jpg')
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
