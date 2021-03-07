@@ -1,7 +1,7 @@
 import threading
 import pyaudio
 import wave
-
+from SpeechRecognize import Speech
 import tkinter
 from tkinter import Grid, simpledialog
 import cv2
@@ -118,6 +118,11 @@ class App:
             os.remove(str(localpath) + r"\frame-" + str(i) + ".jpg")
             i += 1
 
+    def speechtotext(self):
+        localpath = os.getcwd()
+        Speech.transform()
+        Speech.transcribe_file(str(localpath) + r"\temp_audio3.flac")
+
     def snapshot(self):
         # Get a frame from the video source
         self.counting += 1
@@ -195,6 +200,7 @@ class App:
         # self.stop_snapshot()
         threading.Timer(10, self.snapshot).cancel()
         self.cv_function()
+        self.speechtotext()
 
     def file_manager(filename):
         local_path = os.getcwd()
