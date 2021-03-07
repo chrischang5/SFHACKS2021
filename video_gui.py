@@ -69,8 +69,6 @@ class App:
         if ret:
             cv2.imwrite(f"frame-{self.counting}.jpg", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 
-        threading.Timer(10, self.snapshot).start()
-
     def stop_snapshot(self):
         threading.Timer(10, self.snapshot).cancel()
 
@@ -112,7 +110,6 @@ class App:
                     string = tt.strftime("%M:%S")
                     display = string
 
-
                 label['text'] = display  # Or label.config(text=display)
 
                 label.after(1000, count)
@@ -127,7 +124,9 @@ class App:
         self.counter_label(label)
         self.btn_start['state'] = 'disabled'
         self.btn_stop['state'] = 'normal'
-        self.snapshot()
+        threading.Timer(10, self.snapshot).start()
+        # self.snapshot()
+
 
     # Stop function of the stopwatch
     def stop(self):
@@ -135,7 +134,8 @@ class App:
         self.btn_start['state'] = 'normal'
         self.btn_stop['state'] = 'disabled'
         running = False
-        self.stop_snapshot()
+        # self.stop_snapshot()
+        threading.Timer(10, self.snapshot).cancel()
         self.cv_function()
 
 
