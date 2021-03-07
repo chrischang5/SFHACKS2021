@@ -61,8 +61,12 @@ class App:
 
         self.window.after(self.delay, self.update)
 
+    def _set_max_timer(self):
+        """ Add Student Popup """
+        self._popup_win = tkinter.Toplevel()
+        self._popup = set_max_timer(self._popup_win, self._close_student_cb)
 
-
+# https://www.geeksforgeeks.org/create-stopwatch-using-python/
     def counter_label(self, label):
         def count():
             if running:
@@ -128,6 +132,8 @@ class MyVideoCapture:
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
+
+
 
 
 # Create a window and pass it to the Application object
