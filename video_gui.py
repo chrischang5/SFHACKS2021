@@ -5,7 +5,7 @@ import cv2
 import PIL.Image, PIL.ImageTk
 import time
 import datetime
-from input_gui import MaxTimeWindow
+# from input_gui import MaxTimeWindow
 from cloud_vision import cloud_vision_helpers
 import os
 
