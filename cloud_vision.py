@@ -6,20 +6,22 @@ from google.cloud import vision
 """
 Wrapper class for Google Vision API calls working with OpenCV to detect labels and to detect faces
 """
-class cloud_vision:
+
+
+class cloud_vision_helpers:
     """
     Constructor for cloud_vision object
-    @param path: A string indicating the location in a system to write to upon taking a photo
     """
 
-    def __init__(self, path):
-        self.path = path
+    def __init__(self):
         self.labels = None
 
     """
     Method for detecting labels from Google API documents
+    @param path: A string indicating the location in a system to write to upon taking a photo
     """
-    def detect_label(self):
+
+    def detect_label(self, path):
 
         # Imports the Google Cloud client library
 
@@ -27,7 +29,7 @@ class cloud_vision:
         client = vision.ImageAnnotatorClient()
 
         # The name of the image file to annotate
-        file_name = self.path
+        file_name = path
 
         # Loads the image into memory
         with io.open(file_name, 'rb') as image_file:
@@ -46,14 +48,16 @@ class cloud_vision:
 
     """
     Method for detecting faces and emotions from Google API documents
+    @param path: A string indicating the location in a system to write to upon taking a photo
     """
-    def detect_faces(self):
+    @staticmethod
+    def detect_faces(path):
         """Detects faces in an image."""
         from google.cloud import vision
         import io
         client = vision.ImageAnnotatorClient()
 
-        with io.open(self.path, 'rb') as image_file:
+        with io.open(path, 'rb') as image_file:
             content = image_file.read()
 
         image = vision.Image(content=content)
@@ -85,12 +89,13 @@ class cloud_vision:
     def getlabels(self):
         return self.labels
 
+
 if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
     directory = r'/home/chrischang5/PycharmProjects/SFHACKS2021'
     os.chdir(directory)
-    CV1 = cloud_vision('/home/chrischang5/PycharmProjects/SFHACKS2021/file.jpg')
-    CV2 = cloud_vision(r'C:\Users\caleb\Pictures\test\file.jpg')
+    CV1 = cloud_vision_helpers()
+
     while True:
         ret, frame = cap.read()
 
@@ -99,11 +104,11 @@ if __name__ == "__main__":
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('l'):
             cv2.imwrite('file.jpg', frame)
-            CV1.detect_label()
+            CV1.detect_label('/home/chrischang5/PycharmProjects/SFHACKS2021/file.jpg')
 
         if cv2.waitKey(1) & 0xFF == ord('f'):
             cv2.imwrite('file.jpg', frame)
-            CV2.detect_faces()
+            CV1.detect_faces(r'C:\Users\caleb\Pictures\test\file.jpg')
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
