@@ -1,5 +1,5 @@
-# SFHACKS2021
-Submission for SFHacks2021
+# Audience
+This project was created and submitted as part of SFHacks 2021. Audience is a Python application that provides presenters with metrics and analytics on a presentation's delivery, including insights on facial emotions and automatically conversion of audio into a text transcript.
 
 # Inspiration
 We wanted to create an application that would allow presenters to evaluate their presentations to ensure they are conveying their message as intended based on their facial expressions.
