@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 class Speech:
     def transcribe_file(speech_file):
         """Transcribe the given audio file."""
@@ -24,12 +27,13 @@ class Speech:
             # The first alternative is the most likely one for this portion.
             print(u"Transcript: {}".format(result.alternatives[0].transcript))
 
+    @staticmethod
     def transform():
         import sox
         import os
-        localpath = os.getcwd()
+        local_path = Path(os.getcwd())
 
         tfm = sox.Transformer()
         tfm.set_output_format(file_type='flac', rate=16000, channels=1, bits=16, encoding='signed-integer')
-        tfm.build(str(localpath) + r"\temp_audio2.wav", str(localpath)+ r"\temp_audio3.flac")
-        # transcribe_file(str(localpath) + r"\temp_audio3.flac")
+        tfm.build(str(local_path / "temp_audio2.wav"), str(local_path / "temp_audio3.flac"))
+

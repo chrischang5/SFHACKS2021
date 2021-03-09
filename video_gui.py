@@ -8,12 +8,14 @@ import cv2
 import PIL.Image, PIL.ImageTk
 import time
 import datetime
-#from input_gui import MaxTimeWindow
-from cloud_vision import cloud_vision_helpers
+# from input_gui import MaxTimeWindow
+from cloud_vision_helpers import cloud_vision_helpers
 import os
+from pathlib import Path
 
 counter = 0
 running = False
+
 
 class AudioRecorder:
 
@@ -67,8 +69,12 @@ class AudioRecorder:
         audio_thread = threading.Thread(target=self.record)
         audio_thread.start()
 
+
 class App:
     def __init__(self, window, window_title, video_source=0):
+        # Path object to store paths on both Linux and Windows
+        # self.file_path = Path()
+
         self.window = window
         self.window.title(window_title)
         self.video_source = video_source
@@ -110,18 +116,19 @@ class App:
         self.window.mainloop()
 
     def cv_function(self):
-        localpath = os.getcwd()
+        local_path = Path(os.getcwd())
         c = self.counting
         i = 1
-        while (i <= c):
-            cloud_vision_helpers.detect_faces(str(localpath) + r"\frame-" + str(i) + ".jpg")
-            os.remove(str(localpath) + r"\frame-" + str(i) + ".jpg")
+        while i <= c:
+            cloud_vision_helpers.detect_faces(local_path / ("frame-" + str(i) + ".jpg"))
+            os.remove(local_path / ("frame-" + str(i) + ".jpg"))
             i += 1
 
-    def speechtotext(self):
-        localpath = os.getcwd()
+    @staticmethod
+    def speechtotext():
+        local_path = Path(os.getcwd())
         Speech.transform()
-        Speech.transcribe_file(str(localpath) + r"\temp_audio3.flac")
+        Speech.transcribe_file(local_path / "temp_audio3.flac")
 
     def snapshot(self):
         # Get a frame from the video source
@@ -146,7 +153,7 @@ class App:
 
     def set_max_timer_window(self):
         self._popup_win = tkinter.Toplevel()
-        self._popup = MaxTimeWindow(self._popup_win, self._close_student_cb)
+        # self._popup = MaxTimeWindow(self._popup_win, self._close_student_cb)
 
         # max_time_window = simpledialog.askinteger(title="Test",
         #                                   prompt="Maximum Time")
@@ -190,8 +197,7 @@ class App:
         self.btn_stop['state'] = 'normal'
         t = threading.Timer(10, self.snapshot)
         t.start()
-        #self.snapshot()
-
+        # self.snapshot()
 
     # Stop function of the stopwatch
     def stop(self):
@@ -206,56 +212,27 @@ class App:
         self.cv_function()
         self.speechtotext()
 
+    @staticmethod
     def file_manager(filename):
-        local_path = os.getcwd()
+        local_path = Path(os.getcwd())
+        print(local_path / "temp_audio2.wav")
+        print(local_path / (str(filename) + ".avi"))
 
-        if os.path.exists(str(local_path) + "/temp_audio2.wav"):
-            os.remove(str(local_path) + "/temp_audio2.wav")
+        if os.path.exists(local_path / "temp_audio2.wav"):
+            os.remove(local_path / "temp_audio2.wav")
 
-        if os.path.exists(str(local_path) + "/" + filename + ".avi"):
-            os.remove(str(local_path) + "/" + filename + ".avi")
+        if os.path.exists(local_path / (str(filename) + ".avi")):
+            os.remove(local_path / (str(filename) + ".avi"))
 
-    def start_audio_recording(filename):
+    @staticmethod
+    def start_audio_recording():
         global audio_thread
 
         audio_thread = AudioRecorder()
         audio_thread.start()
 
-        return filename
-
-    def stop_AVrecording(filename):
+    def stop_AVrecording(self):
         audio_thread.stop()
-        # frame_counts = video_thread.frame_counts
-        # elapsed_time = time.time() - video_thread.start_time
-        # recorded_fps = frame_counts / elapsed_time
-        # print("total frames " + str(frame_counts))
-        # print("elapsed time " + str(elapsed_time))
-        # print("recorded fps " + str(recorded_fps))
-        # video_thread.stop()
-
-        # Makes sure the threads have finished
-        # while threading.active_count() > 1:
-        #     time.sleep(1)
-
-        # Merging audio and video signal
-
-        # if abs(recorded_fps - 6) >= 0.01:  # If the fps rate was higher/lower than expected, re-encode it to the expected
-        #
-        #     print("Re-encoding")
-        #     cmd = "ffmpeg -r " + str(recorded_fps) + " -i temp_video.avi -pix_fmt yuv420p -r 6 temp_video2.avi"
-        #     subprocess.call(cmd, shell=True)
-        #
-        #     print("Muxing")
-        #     cmd = "ffmpeg -ac 2 -channel_layout stereo -i temp_audio.wav -i temp_video2.avi -pix_fmt yuv420p " + filename + ".avi"
-        #     subprocess.call(cmd, shell=True)
-        #
-        # else:
-        #
-        #     print("Normal recording\nMuxing")
-        #     cmd = "ffmpeg -ac 2 -channel_layout stereo -i temp_audio.wav -i temp_video.avi -pix_fmt yuv420p " + filename + ".avi"
-        #     subprocess.call(cmd, shell=True)
-        #
-        #     print("..")
 
 
 class MyVideoCapture:

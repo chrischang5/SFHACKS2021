@@ -22,7 +22,7 @@ class AudioRecorder:
         self.frames_per_buffer = 1024
         self.channels = 2
         self.format = pyaudio.paInt16
-        self.audio_filename = "temp_audio2.wav"
+        self.audio_filename = "../temp_audio2.wav"
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(format=self.format,
                                       channels=self.channels,
