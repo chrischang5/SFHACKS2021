@@ -10,6 +10,13 @@ As you begin to record yourself on the program, it takes a picture of your face 
 # How we built it
 We used the Vision and Speech Google Cloud Platform APIs to process and analyze audio and video data. Tkinter was used as the UI framework and PyAudio and SoX were used to process audio data to work with the Speech GCP API.
 
+# Technologies Used
+- GCP Speech
+- GCP Vision
+- Tkinter
+- SoX
+- OpenCV
+
 # Challenges we ran into
 We had issues with threading as we wanted to have multiple processes running at the same time. For example, we wanted to capture audio, capture video, and show a GUI simultaneously.
 
